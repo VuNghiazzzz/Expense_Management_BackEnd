@@ -2,15 +2,11 @@ package com.example.Expense.management.dto;
 
 import com.example.Expense.management.entity.Category;
 import com.example.Expense.management.entity.Transaction;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
