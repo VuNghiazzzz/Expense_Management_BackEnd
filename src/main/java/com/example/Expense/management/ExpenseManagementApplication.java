@@ -10,5 +10,4 @@ public class ExpenseManagementApplication {
 		System.out.println("Welcome");
 		SpringApplication.run(ExpenseManagementApplication.class, args);
 	}
-
 }
