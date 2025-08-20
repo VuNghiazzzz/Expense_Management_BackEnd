@@ -91,7 +91,7 @@ public class TransactionImpl implements TransactionService {
     public TransactionDto updateTransaction(Long userId, Long transactionId, TransactionDto transactionDto) {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with ID: " + transactionId + " for user: " + userId));
-        // Update
+        // Update Transaction
         transaction.setAmount(transactionDto.getAmount());
         transaction.setNote(transactionDto.getNote());
         transaction.setDate(transactionDto.getDate());
@@ -116,6 +116,7 @@ public class TransactionImpl implements TransactionService {
     @Override
     @Transactional
     public void deleteTransaction(Long userId, Long transactionId) {
+        //Delete Transaction
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with ID: " + transactionId + " for user: " + userId));
 
@@ -124,12 +125,20 @@ public class TransactionImpl implements TransactionService {
 
     @Override
     public List<TransactionDto> getTransactionsByDate(Long userId, LocalDate date) {
-        return null;
+        // Find transactions for a user within a date range
+        List<Transaction> transactions = transactionRepository.findByUserIdAndDate(userId, date);
+        return transactions.stream()
+                .map(TransactionMapper::mapToTransactionDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<TransactionDto> getTransactionsBetweenDates(Long userId, LocalDate startDate, LocalDate endDate) {
-        return null;
+        public List<TransactionDto> getTransactionsBetweenDates(Long userId, LocalDate startDate, LocalDate endDate) {
+        // Find Transactions Between Dates
+        List<Transaction> transactions = transactionRepository.findByUserAndDateBetween(userId, startDate, endDate);
+        return transactions.stream()
+                .map(TransactionMapper::mapToTransactionDto)
+                .collect(Collectors.toList());
     }
 
     @Override
