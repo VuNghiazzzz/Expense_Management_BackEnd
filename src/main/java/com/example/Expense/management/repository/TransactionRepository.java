@@ -8,11 +8,14 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository <Transaction, Long> {
 
     List<Transaction> findByUser(User user);
+
+    List<Transaction> findByUserId(Long userId);
 
     List<Transaction> findByUserAndDate(User user, LocalDate date);
 
@@ -21,4 +24,6 @@ public interface TransactionRepository extends JpaRepository <Transaction, Long>
     List<Transaction> findByUserAndCategoryTypeAndDateBetween(User user, Category.CategoryType type, LocalDate startDate, LocalDate endDate);
 
     List<Transaction> findByUserAndCategoryTypeAndDateBetween(Long userId, Category.CategoryType type, LocalDate startDate, LocalDate endDate);
+
+    Optional<Transaction> findByIdAndUserId(Long transactionId, Long userId);
 }

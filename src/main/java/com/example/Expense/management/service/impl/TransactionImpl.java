@@ -16,6 +16,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class TransactionImpl implements TransactionService {
 
@@ -75,17 +77,49 @@ public class TransactionImpl implements TransactionService {
 
     @Override
     public List<TransactionDto> getAllTransactionsByUser(Long userId) {
-        return null;
+        // Find all transactions for a given user ID
+        List<Transaction> transactions = transactionRepository.findByUserId(userId);
+
+        //method to find by user ID
+        return transactions.stream()
+                .map(TransactionMapper::mapToTransactionDto)
+                .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional
     public TransactionDto updateTransaction(Long userId, Long transactionId, TransactionDto transactionDto) {
-        return null;
+        Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with ID: " + transactionId + " for user: " + userId));
+        // Update
+        transaction.setAmount(transactionDto.getAmount());
+        transaction.setNote(transactionDto.getNote());
+        transaction.setDate(transactionDto.getDate());
+
+        // Check Category null
+        if (transactionDto.getCategoryId() != null) {
+            Category category = categoryRepository.findById(transactionDto.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found with ID: " + transactionDto.getCategoryId()));
+
+            if (!category.getUser().getId().equals(userId)) {
+                throw new IllegalArgumentException("Category does not belong to the authenticated user.");
+            }
+            transaction.setCategory(category);
+        }
+
+        //Save the update
+        Transaction updatetransaction = transactionRepository.save(transaction);
+        return  TransactionMapper.mapToTransactionDto(updatetransaction);
+
     }
 
     @Override
+    @Transactional
     public void deleteTransaction(Long userId, Long transactionId) {
+        Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with ID: " + transactionId + " for user: " + userId));
 
+        transactionRepository.delete(transaction);
     }
 
     @Override

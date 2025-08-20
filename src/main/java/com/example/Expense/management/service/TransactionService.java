@@ -1,12 +1,14 @@
 package com.example.Expense.management.service;
 
 import com.example.Expense.management.dto.TransactionDto;
+import com.example.Expense.management.entity.Transaction;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public interface TransactionService {
@@ -32,5 +34,7 @@ public interface TransactionService {
     Map<String, BigDecimal> getMonthlySummary(Long userId, int year);
 
     Map<String, BigDecimal> getExpenseSummaryByCategory(Long userId, LocalDate startDate, LocalDate endDate);
+
+
 }
 
