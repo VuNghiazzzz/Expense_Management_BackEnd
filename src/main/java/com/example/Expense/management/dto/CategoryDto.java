@@ -1,6 +1,6 @@
 package com.example.Expense.management.dto;
 
-import com.example.Expense.management.entity.CategoryType;
+import com.example.Expense.management.entity.Category.CategoryType;
 import com.example.Expense.management.entity.User;
 import lombok.*;
 

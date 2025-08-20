@@ -1,8 +1,5 @@
 package com.example.Expense.management.entity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "category")
@@ -20,6 +17,11 @@ public class Category {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    public enum CategoryType {
+        INCOME,
+        EXPENSE
+    }
 
     public Category() {
     }
