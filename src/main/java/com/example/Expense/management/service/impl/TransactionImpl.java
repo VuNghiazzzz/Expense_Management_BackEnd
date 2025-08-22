@@ -14,9 +14,8 @@ import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.Month;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TransactionImpl implements TransactionService {
@@ -153,11 +152,35 @@ public class TransactionImpl implements TransactionService {
 
     @Override
     public Map<String, BigDecimal> getMonthlySummary(Long userId, int year) {
-        return null;
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+
+        LocalDate endDate = LocalDate.of(year, 12, 31);
+
+        List<Transaction> transactions  = transactionRepository.findByUserAndDateBetween(userId, startDate, endDate);
+
+        Map<String, BigDecimal> monthlySummary = new HashMap<>();
+        Arrays.stream(Month.values()).forEach(month -> monthlySummary.put(month.toString(), BigDecimal.ZERO));
+
+        transactions .stream()
+                .collect(Collectors.groupingBy(
+                        transaction -> transaction.getDate().getMonth().toString(),
+                        Collectors.reducing(BigDecimal.ZERO, Transaction::getAmount, BigDecimal::add)
+                )).forEach(monthlySummary::put);
+
+        return monthlySummary;
     }
 
     @Override
     public Map<String, BigDecimal> getExpenseSummaryByCategory(Long userId, LocalDate startDate, LocalDate endDate) {
-        return null;
+        List<Transaction> transactions = transactionRepository.findByUserAndDateBetween(userId, startDate, endDate);
+
+        List<Transaction> expenseTransactions = transactions.stream()
+                .filter(t -> t.getCategory().getType() == Category.CategoryType.EXPENSE)
+                .collect(Collectors.toList());
+        return expenseTransactions.stream()
+                .collect(Collectors.groupingBy(
+                        transaction -> transaction.getCategory().getName(),
+                        Collectors.reducing(BigDecimal.ZERO, Transaction::getAmount, BigDecimal::add)
+                ));
     }
 }

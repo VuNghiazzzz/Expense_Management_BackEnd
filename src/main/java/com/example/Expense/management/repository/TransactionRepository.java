@@ -24,17 +24,17 @@ public interface TransactionRepository extends JpaRepository <Transaction, Long>
 
     List<Transaction> findByUserAndDateBetween(Long userId, LocalDate startDate, LocalDate endDate);
 
-    List<Transaction> findByUserAndCategoryTypeAndDateBetween(User user, Category.CategoryType type, LocalDate startDate, LocalDate endDate);
+//    List<Transaction> findByUserAndCategoryTypeAndDateBetween(User user, Category.CategoryType type, LocalDate startDate, LocalDate endDate);
 
-    List<Transaction> findByUserAndCategoryTypeAndDateBetween(Long userId, Category.CategoryType type, LocalDate startDate, LocalDate endDate);
+//    List<Transaction> findByUserAndCategoryTypeAndDateBetween(Long userId, Category.CategoryType type, LocalDate startDate, LocalDate endDate);
 
     Optional<Transaction> findByIdAndUserId(Long transactionId, Long userId);
 
     List<Transaction> findByUserIdAndDate(Long userId, LocalDate date);
 
-    Optional<BigDecimal> findTotalAmountByUserIdAndCategoryTypeAndDateBetween(
-            @Param("userId") Long userId,
-            @Param("type") Category.CategoryType type,
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate);
+//    Optional<BigDecimal> findTotalAmountByUserIdAndCategoryTypeAndDateBetween(
+//            @Param("userId") Long userId,
+//            @Param("type") Category.CategoryType type,
+//            @Param("startDate") LocalDate startDate,
+//            @Param("endDate") LocalDate endDate);
 }
