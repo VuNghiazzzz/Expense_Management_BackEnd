@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
 
     private CategoryServiceImpl categoryServiceimpl;
-    private CategoryRepository categoryRepository;
 
     @PostMapping("/add")
     @ResponseBody
