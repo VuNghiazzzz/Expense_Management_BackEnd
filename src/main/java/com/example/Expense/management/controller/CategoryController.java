@@ -18,8 +18,6 @@ import java.util.List;
 @RequestMapping("/api/categories")
 public class CategoryController {
 
-//    @Autowired
-//    private CategoryServiceImpl categoryServiceimpl;
 
     @Autowired
     private CategoryService categoryService;
