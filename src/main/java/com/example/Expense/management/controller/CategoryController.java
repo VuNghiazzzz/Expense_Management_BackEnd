@@ -18,8 +18,6 @@ import java.util.List;
 @RequestMapping("/api/categories")
 public class CategoryController {
 
-//    @Autowired
-//    private CategoryServiceImpl categoryServiceimpl;
 
     @Autowired
     private CategoryService categoryService;
@@ -53,6 +51,21 @@ public class CategoryController {
             CategoryDto updatedCategory = categoryService.updateCategory(id, categoryDto, currentUser);
             if (updatedCategory != null) {
                 return ResponseEntity.ok(updatedCategory);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found.");
+            }
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        try {
+            boolean isDeleted = categoryService.deleteCategory(id, currentUser);
+            if (isDeleted) {
+                return ResponseEntity.ok("Category deleted successfully.");
             } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found.");
             }
