@@ -59,4 +59,19 @@ public class CategoryController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        try {
+            boolean isDeleted = categoryService.deleteCategory(id, currentUser);
+            if (isDeleted) {
+                return ResponseEntity.ok("Category deleted successfully.");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found.");
+            }
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+        }
+    }
+
 }
