@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5050")
+@CrossOrigin(origins = "*")
 @RequestMapping("/api/categories")
 public class CategoryController {
 
