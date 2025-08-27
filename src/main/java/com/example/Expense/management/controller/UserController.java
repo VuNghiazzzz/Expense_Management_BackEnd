@@ -24,7 +24,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/me")
+    @GetMapping("/profile")
     public ResponseEntity<?> getCurrentUser() {
         User user = userService.getCurrentUser();
         if (user == null) {
