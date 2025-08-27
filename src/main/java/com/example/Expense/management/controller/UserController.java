@@ -1,7 +1,9 @@
 package com.example.Expense.management.controller;
 
 import com.example.Expense.management.dto.UserDto;
+import com.example.Expense.management.entity.LoginDto;
 import com.example.Expense.management.entity.User;
+import com.example.Expense.management.loginreponse.LoginMesage;
 import com.example.Expense.management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,14 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/login")
+    @ResponseBody
+    public ResponseEntity<?> loginUser(@RequestBody LoginDto loginDto) {
+        LoginMesage loginMesage = userService.LoginUser(loginDto);
+        return ResponseEntity.ok(loginMesage);
+    }
+
 
     @GetMapping("/profile")
     public ResponseEntity<?> getCurrentUser() {

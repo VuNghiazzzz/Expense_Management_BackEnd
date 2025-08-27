@@ -1,7 +1,9 @@
 package com.example.Expense.management.service.impl;
 
 import com.example.Expense.management.dto.UserDto;
+import com.example.Expense.management.entity.LoginDto;
 import com.example.Expense.management.entity.User;
+import com.example.Expense.management.loginreponse.LoginMesage;
 import org.springframework.security.core.Authentication;
 import com.example.Expense.management.mapper.UserMapper;
 import com.example.Expense.management.repository.UserRepository;
@@ -48,5 +50,22 @@ public class UserServiceImpl implements UserService {
             }
             return (User) authentication.getPrincipal(); // Getting the user from the context of Spring Security
     }
+
+    //Login
+    @Override
+    public LoginMesage LoginUser(LoginDto loginDto) {
+        User user = userRepository.findByUsername(loginDto.getUsername());
+        if (user == null) {
+            return new LoginMesage("User not found", false);
+        }
+
+        boolean passwordMatch = passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
+        if (!passwordMatch) {
+            return new LoginMesage("Invalid credentials", false);
+        }
+
+        return new LoginMesage("Login successful", true);
+    }
+
 
 }
