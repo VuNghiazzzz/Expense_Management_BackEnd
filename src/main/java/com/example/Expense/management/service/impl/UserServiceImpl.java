@@ -14,6 +14,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -35,6 +38,14 @@ public class UserServiceImpl implements UserService {
         User user = UserMapper.mapUser(userDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
+
+        UserDto registeredUser = UserMapper.mapUserDto(savedUser);
+
+        String token = jwtUtil.generateToken(registeredUser.getEmail());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", registeredUser);
+        response.put("token", token);
 
         return UserMapper.mapUserDto(savedUser); // Use a separate mapper to avoid password exposure
         }
