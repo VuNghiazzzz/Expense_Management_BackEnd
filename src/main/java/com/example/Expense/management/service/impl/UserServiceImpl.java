@@ -29,11 +29,32 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+//    @Override
+//    public UserDto registerUser(UserDto userDto) {
+//        // Check user already exists
+//        if (userRepository.findByUsername(userDto.getEmail()) != null || userRepository.findByEmail(userDto.getEmail()) != null) {
+//              throw new RuntimeException("A username or email that already exists.");
+//        }
+//        User user = UserMapper.mapUser(userDto);
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        User savedUser = userRepository.save(user);
+//
+//        UserDto registeredUser = UserMapper.mapUserDto(savedUser);
+//
+//        String token = jwtUtil.generateToken(registeredUser.getEmail());
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("user", UserMapper.mapUserDto(savedUser));
+//        response.put("token", token);
+//
+//        return UserMapper.mapUserDto(savedUser); // Use a separate mapper to avoid password exposure
+//        }
+
     @Override
-    public UserDto registerUser(UserDto userDto) {
+    public Map<String, Object> registerUser(UserDto userDto){
         // Check user already exists
         if (userRepository.findByUsername(userDto.getEmail()) != null || userRepository.findByEmail(userDto.getEmail()) != null) {
-              throw new RuntimeException("A username or email that already exists.");
+            throw new RuntimeException("A username or email that already exists.");
         }
         User user = UserMapper.mapUser(userDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -44,13 +65,11 @@ public class UserServiceImpl implements UserService {
         String token = jwtUtil.generateToken(registeredUser.getEmail());
 
         Map<String, Object> response = new HashMap<>();
-        response.put("user", registeredUser);
+        response.put("user", UserMapper.mapUserDto(savedUser));
         response.put("token", token);
 
-        return UserMapper.mapUserDto(savedUser); // Use a separate mapper to avoid password exposure
-        }
-
-
+        return response;
+    }
 
     @Override
     public User findByUsername(String username) {
@@ -66,25 +85,41 @@ public class UserServiceImpl implements UserService {
             return (User) authentication.getPrincipal(); // Getting the user from the context of Spring Security
     }
 
+//    //Login
+//    @Override
+//    public LoginMessage LoginUser(LoginDto loginDto) {
+//        User user = userRepository.findByEmail(loginDto.getEmail());
+////        if (user == null || !user.getPassword().equals(loginDto.getPassword())) {
+////            return new LoginMessage("Invalid credentials", false, null);
+////        }
+//        if (user == null || !passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+//            return new LoginMessage("Invalid credentials", false, null);
+//        }
+////        boolean passwordMatch = passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
+////        if (!passwordMatch) {
+////            return new LoginMessage("Invalid credentials", false);
+////        }
+//
+//        String token = jwtUtil.generateToken(user.getEmail());
+//
+////      return new LoginMessage("Login successful", true);
+//
+//        return new LoginMessage("Login successful", true, token);
+//    }
+
     //Login
     @Override
     public LoginMessage LoginUser(LoginDto loginDto) {
-        User user = userRepository.findByUsername(loginDto.getEmail());
-        if (user == null || !user.getPassword().equals(loginDto.getPassword())) {
+
+        User user = userRepository.findByEmail(loginDto.getEmail());
+
+        if (user == null || !passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
             return new LoginMessage("Invalid credentials", false, null);
         }
 
-//        boolean passwordMatch = passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
-//        if (!passwordMatch) {
-//            return new LoginMessage("Invalid credentials", false);
-//        }
-
         String token = jwtUtil.generateToken(user.getEmail());
-
-//      return new LoginMessage("Login successful", true);
 
         return new LoginMessage("Login successful", true, token);
     }
-
 
 }
