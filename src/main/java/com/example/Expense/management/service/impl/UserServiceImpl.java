@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto registerUser(UserDto userDto) {
         // Check user already exists
-        if (userRepository.findByUsername(userDto.getUsername()) != null || userRepository.findByEmail(userDto.getEmail()) != null) {
+        if (userRepository.findByUsername(userDto.getEmail()) != null || userRepository.findByEmail(userDto.getEmail()) != null) {
               throw new RuntimeException("A username or email that already exists.");
         }
         User user = UserMapper.mapUser(userDto);
