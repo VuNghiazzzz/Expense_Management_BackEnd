@@ -1,9 +1,9 @@
 package com.example.Expense.management.controller;
 
 import com.example.Expense.management.dto.UserDto;
-import com.example.Expense.management.entity.LoginDto;
+import com.example.Expense.management.dto.LoginDto;
 import com.example.Expense.management.entity.User;
-import com.example.Expense.management.loginreponse.LoginMesage;
+import com.example.Expense.management.loginreponse.LoginMessage;
 import com.example.Expense.management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody LoginDto loginDto) {
-        LoginMesage loginMesage = userService.LoginUser(loginDto);
+        LoginMessage loginMesage = userService.LoginUser(loginDto);
         return ResponseEntity.ok(loginMesage);
     }
 

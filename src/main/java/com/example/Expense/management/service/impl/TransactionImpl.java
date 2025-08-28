@@ -11,6 +11,7 @@ import com.example.Expense.management.repository.TransactionRepository;
 import com.example.Expense.management.repository.UserRepository;
 import com.example.Expense.management.service.TransactionService;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Service
 public class TransactionImpl implements TransactionService {
 
     private TransactionRepository transactionRepository;
