@@ -1,6 +1,7 @@
 package com.example.Expense.management.controller;
 
 import com.example.Expense.management.dto.TransactionDto;
+import com.example.Expense.management.entity.User;
 import com.example.Expense.management.service.TransactionService;
 import com.example.Expense.management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,8 @@ public class TransactionController {
     @GetMapping("/summary/monthly")
     public ResponseEntity<Map<String, BigDecimal>> getMonthlySummary(@RequestParam int year, Principal principal) {
         Long userId = getCurrentUserId(principal);
-        return ResponseEntity.ok(transactionService.getMonthlySummary(userId, year));
+        Map<String, BigDecimal> summary = transactionService.getMonthlySummary(userId, year);
+        return ResponseEntity.ok(summary);
     }
 
 

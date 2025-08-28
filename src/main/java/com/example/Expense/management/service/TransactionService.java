@@ -2,6 +2,7 @@ package com.example.Expense.management.service;
 
 import com.example.Expense.management.dto.TransactionDto;
 import com.example.Expense.management.entity.Transaction;
+import com.example.Expense.management.entity.User;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@Service
+
 public interface TransactionService {
 
     TransactionDto createTransaction(Long userId, TransactionDto transactionDto);
