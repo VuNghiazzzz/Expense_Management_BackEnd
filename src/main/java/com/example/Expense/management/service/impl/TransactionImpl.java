@@ -133,10 +133,11 @@ public class TransactionImpl implements TransactionService {
                 .collect(Collectors.toList());
     }
 
+
     @Override
         public List<TransactionDto> getTransactionsBetweenDates(Long userId, LocalDate startDate, LocalDate endDate) {
         // Find Transactions Between Dates
-        List<Transaction> transactions = transactionRepository.findByUserAndDateBetween(userId, startDate, endDate);
+        List<Transaction> transactions = transactionRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
         return transactions.stream()
                 .map(TransactionMapper::mapToTransactionDto)
                 .collect(Collectors.toList());
@@ -158,7 +159,7 @@ public class TransactionImpl implements TransactionService {
 
         LocalDate endDate = LocalDate.of(year, 12, 31);
 
-        List<Transaction> transactions  = transactionRepository.findByUserAndDateBetween(userId, startDate, endDate);
+        List<Transaction> transactions  = transactionRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
 
         Map<String, BigDecimal> monthlySummary = new HashMap<>();
         Arrays.stream(Month.values()).forEach(month -> monthlySummary.put(month.toString(), BigDecimal.ZERO));
@@ -172,9 +173,10 @@ public class TransactionImpl implements TransactionService {
         return monthlySummary;
     }
 
+
     @Override
     public Map<String, BigDecimal> getExpenseSummaryByCategory(Long userId, LocalDate startDate, LocalDate endDate) {
-        List<Transaction> transactions = transactionRepository.findByUserAndDateBetween(userId, startDate, endDate);
+        List<Transaction> transactions = transactionRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
 
         List<Transaction> expenseTransactions = transactions.stream()
                 .filter(t -> t.getCategory().getType() == Category.CategoryType.EXPENSE)
