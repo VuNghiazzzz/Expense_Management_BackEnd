@@ -1,9 +1,10 @@
 package com.example.Expense.management.service.impl;
 
+import com.example.Expense.management.JWT.JwtUtil;
 import com.example.Expense.management.dto.UserDto;
-import com.example.Expense.management.entity.LoginDto;
+import com.example.Expense.management.dto.LoginDto;
 import com.example.Expense.management.entity.User;
-import com.example.Expense.management.loginreponse.LoginMesage;
+import com.example.Expense.management.loginreponse.LoginMessage;
 import org.springframework.security.core.Authentication;
 import com.example.Expense.management.mapper.UserMapper;
 import com.example.Expense.management.repository.UserRepository;
@@ -18,6 +19,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -53,18 +57,22 @@ public class UserServiceImpl implements UserService {
 
     //Login
     @Override
-    public LoginMesage LoginUser(LoginDto loginDto) {
-        User user = userRepository.findByUsername(loginDto.getUsername());
-        if (user == null) {
-            return new LoginMesage("User not found", false);
+    public LoginMessage LoginUser(LoginDto loginDto) {
+        User user = userRepository.findByUsername(loginDto.getEmail());
+        if (user == null || !user.getPassword().equals(loginDto.getPassword())) {
+            return new LoginMessage("Invalid credentials", false, null);
         }
 
-        boolean passwordMatch = passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
-        if (!passwordMatch) {
-            return new LoginMesage("Invalid credentials", false);
-        }
+//        boolean passwordMatch = passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
+//        if (!passwordMatch) {
+//            return new LoginMessage("Invalid credentials", false);
+//        }
 
-        return new LoginMesage("Login successful", true);
+        String token = jwtUtil.generateToken(user.getEmail());
+
+//      return new LoginMessage("Login successful", true);
+
+        return new LoginMessage("Login successful", true, token);
     }
 
 
