@@ -27,7 +27,6 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    @ResponseBody
     public ResponseEntity<?> loginUser(@RequestBody LoginDto loginDto) {
         LoginMesage loginMesage = userService.LoginUser(loginDto);
         return ResponseEntity.ok(loginMesage);
