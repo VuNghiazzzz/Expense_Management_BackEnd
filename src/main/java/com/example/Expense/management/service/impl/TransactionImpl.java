@@ -174,17 +174,17 @@ public class TransactionImpl implements TransactionService {
     }
 
 
-    @Override
-    public Map<String, BigDecimal> getExpenseSummaryByCategory(Long userId, LocalDate startDate, LocalDate endDate) {
-        List<Transaction> transactions = transactionRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
-
-        List<Transaction> expenseTransactions = transactions.stream()
-                .filter(t -> t.getCategory().getType() == Category.CategoryType.EXPENSE)
-                .collect(Collectors.toList());
-        return expenseTransactions.stream()
-                .collect(Collectors.groupingBy(
-                        transaction -> transaction.getCategory().getName(),
-                        Collectors.reducing(BigDecimal.ZERO, Transaction::getAmount, BigDecimal::add)
-                ));
-    }
+//    @Override
+//    public Map<String, BigDecimal> getExpenseSummaryByCategory(Long userId, LocalDate startDate, LocalDate endDate) {
+//        List<Transaction> transactions = transactionRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
+//
+//        List<Transaction> expenseTransactions = transactions.stream()
+//                .filter(t -> t.getCategory().getType() == Category.CategoryType.EXPENSE)
+//                .collect(Collectors.toList());
+//        return expenseTransactions.stream()
+//                .collect(Collectors.groupingBy(
+//                        transaction -> transaction.getCategory().getName(),
+//                        Collectors.reducing(BigDecimal.ZERO, Transaction::getAmount, BigDecimal::add)
+//                ));
+//    }
 }

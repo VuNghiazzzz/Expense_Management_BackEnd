@@ -5,17 +5,22 @@ import com.example.Expense.management.dto.UserDto;
 import com.example.Expense.management.dto.LoginDto;
 import com.example.Expense.management.entity.User;
 import com.example.Expense.management.loginreponse.LoginMessage;
+import com.example.Expense.management.sercurity.CustomUserDetails;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import com.example.Expense.management.mapper.UserMapper;
 import com.example.Expense.management.repository.UserRepository;
 import com.example.Expense.management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -26,14 +31,42 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+//    @Autowired
+//    private PasswordEncoder passwordEncoder;
+
+
+    private final PasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(@Lazy PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+//    @Override
+//    public UserDto registerUser(UserDto userDto) {
+//        // Check user already exists
+//        if (userRepository.findByUsername(userDto.getEmail()) != null || userRepository.findByEmail(userDto.getEmail()) != null) {
+//              throw new RuntimeException("A username or email that already exists.");
+//        }
+//        User user = UserMapper.mapUser(userDto);
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        User savedUser = userRepository.save(user);
+//
+//        UserDto registeredUser = UserMapper.mapUserDto(savedUser);
+//
+//        String token = jwtUtil.generateToken(registeredUser.getEmail());
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("user", UserMapper.mapUserDto(savedUser));
+//        response.put("token", token);
+//
+//        return UserMapper.mapUserDto(savedUser); // Use a separate mapper to avoid password exposure
+//        }
 
     @Override
-    public UserDto registerUser(UserDto userDto) {
+    public Map<String, Object> registerUser(UserDto userDto){
         // Check user already exists
         if (userRepository.findByUsername(userDto.getEmail()) != null || userRepository.findByEmail(userDto.getEmail()) != null) {
-              throw new RuntimeException("A username or email that already exists.");
+            throw new RuntimeException("A username or email that already exists.");
         }
         User user = UserMapper.mapUser(userDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -44,13 +77,11 @@ public class UserServiceImpl implements UserService {
         String token = jwtUtil.generateToken(registeredUser.getEmail());
 
         Map<String, Object> response = new HashMap<>();
-        response.put("user", registeredUser);
+        response.put("user", UserMapper.mapUserDto(savedUser));
         response.put("token", token);
 
-        return UserMapper.mapUserDto(savedUser); // Use a separate mapper to avoid password exposure
-        }
-
-
+        return response;
+    }
 
     @Override
     public User findByUsername(String username) {
@@ -64,27 +95,60 @@ public class UserServiceImpl implements UserService {
                 return null;
             }
             return (User) authentication.getPrincipal(); // Getting the user from the context of Spring Security
+//        String email = authentication.getName();
+//        return userRepository.findByEmail(email);
     }
+
+//    //Login
+//    @Override
+//    public LoginMessage LoginUser(LoginDto loginDto) {
+//        User user = userRepository.findByEmail(loginDto.getEmail());
+////        if (user == null || !user.getPassword().equals(loginDto.getPassword())) {
+////            return new LoginMessage("Invalid credentials", false, null);
+////        }
+//        if (user == null || !passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+//            return new LoginMessage("Invalid credentials", false, null);
+//        }
+////        boolean passwordMatch = passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
+////        if (!passwordMatch) {
+////            return new LoginMessage("Invalid credentials", false);
+////        }
+//
+//        String token = jwtUtil.generateToken(user.getEmail());
+//
+////      return new LoginMessage("Login successful", true);
+//
+//        return new LoginMessage("Login successful", true, token);
+//    }
 
     //Login
     @Override
     public LoginMessage LoginUser(LoginDto loginDto) {
-        User user = userRepository.findByUsername(loginDto.getEmail());
-        if (user == null || !user.getPassword().equals(loginDto.getPassword())) {
+
+//        User user = userRepository.findByEmail(loginDto.getEmail());
+
+        Optional<User> optionalUser = userRepository.findByEmail(loginDto.getEmail());
+
+        if (optionalUser == null || !passwordEncoder.matches(loginDto.getPassword(), optionalUser.get().getPassword())) {
             return new LoginMessage("Invalid credentials", false, null);
         }
 
-//        boolean passwordMatch = passwordEncoder.matches(loginDto.getPassword(), user.getPassword());
-//        if (!passwordMatch) {
-//            return new LoginMessage("Invalid credentials", false);
-//        }
-
-        String token = jwtUtil.generateToken(user.getEmail());
-
-//      return new LoginMessage("Login successful", true);
+        String token = jwtUtil.generateToken(optionalUser.get().getEmail());
 
         return new LoginMessage("Login successful", true, token);
     }
+
+    @Override
+    public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> optionalUser = userRepository.findByEmail(username);
+
+        if (optionalUser.isEmpty()) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+        User user = optionalUser.get();
+        return new CustomUserDetails(user);
+    }
+
 
 
 }

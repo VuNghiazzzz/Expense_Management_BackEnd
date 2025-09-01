@@ -34,7 +34,7 @@ public interface TransactionService {
 
     Map<String, BigDecimal> getMonthlySummary(Long userId, int year);
 
-    Map<String, BigDecimal> getExpenseSummaryByCategory(Long userId, LocalDate startDate, LocalDate endDate);
+//    Map<String, BigDecimal> getExpenseSummaryByCategory(Long userId, LocalDate startDate, LocalDate endDate);
 
 
 }
