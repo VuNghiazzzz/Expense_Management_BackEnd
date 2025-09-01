@@ -5,17 +5,22 @@ import com.example.Expense.management.dto.UserDto;
 import com.example.Expense.management.dto.LoginDto;
 import com.example.Expense.management.entity.User;
 import com.example.Expense.management.loginreponse.LoginMessage;
+import com.example.Expense.management.sercurity.CustomUserDetails;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import com.example.Expense.management.mapper.UserMapper;
 import com.example.Expense.management.repository.UserRepository;
 import com.example.Expense.management.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -26,8 +31,15 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private JwtUtil jwtUtil;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+//    @Autowired
+//    private PasswordEncoder passwordEncoder;
+
+
+    private final PasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(@Lazy PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
 
 //    @Override
 //    public UserDto registerUser(UserDto userDto) {
@@ -83,6 +95,8 @@ public class UserServiceImpl implements UserService {
                 return null;
             }
             return (User) authentication.getPrincipal(); // Getting the user from the context of Spring Security
+//        String email = authentication.getName();
+//        return userRepository.findByEmail(email);
     }
 
 //    //Login
@@ -111,15 +125,30 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginMessage LoginUser(LoginDto loginDto) {
 
-        User user = userRepository.findByEmail(loginDto.getEmail());
+//        User user = userRepository.findByEmail(loginDto.getEmail());
 
-        if (user == null || !passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
+        Optional<User> optionalUser = userRepository.findByEmail(loginDto.getEmail());
+
+        if (optionalUser == null || !passwordEncoder.matches(loginDto.getPassword(), optionalUser.get().getPassword())) {
             return new LoginMessage("Invalid credentials", false, null);
         }
 
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(optionalUser.get().getEmail());
 
         return new LoginMessage("Login successful", true, token);
     }
+
+    @Override
+    public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<User> optionalUser = userRepository.findByEmail(username);
+
+        if (optionalUser.isEmpty()) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+        User user = optionalUser.get();
+        return new CustomUserDetails(user);
+    }
+
+
 
 }

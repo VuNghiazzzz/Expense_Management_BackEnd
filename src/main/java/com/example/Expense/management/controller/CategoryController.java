@@ -3,11 +3,14 @@ package com.example.Expense.management.controller;
 import com.example.Expense.management.dto.CategoryDto;
 import com.example.Expense.management.entity.User;
 import com.example.Expense.management.repository.CategoryRepository;
+import com.example.Expense.management.sercurity.CustomUserDetails;
 import com.example.Expense.management.service.CategoryService;
+import com.example.Expense.management.service.UserService;
 import com.example.Expense.management.service.impl.CategoryServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,9 +25,13 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/list")
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User currentUser = userService.getCurrentUser();
         List<CategoryDto> categories = categoryService.getAllCategoriesByUser(currentUser);
         if (categories != null){
             return ResponseEntity.ok(categories);
@@ -35,8 +42,13 @@ public class CategoryController {
 
     @PostMapping("/add")
     public ResponseEntity<Boolean> createCategory(@RequestBody CategoryDto categoryDto) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        boolean isSuccess = categoryService.createCategory(categoryDto, currentUser);
+//      User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//      User currentUser = userService.getCurrentUser();
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userDetails.getUser();
+
+        System.out.println("Current User ID: " + (user != null ? user.getId() : "null"));
+        boolean isSuccess = categoryService.createCategory(categoryDto, user);
         if(isSuccess){
             return ResponseEntity.ok(isSuccess);
         } else {
@@ -46,9 +58,12 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User currentUser = userService.getCurrentUser();
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userDetails.getUser();
         try {
-            CategoryDto updatedCategory = categoryService.updateCategory(id, categoryDto, currentUser);
+            CategoryDto updatedCategory = categoryService.updateCategory(id, categoryDto, user);
             if (updatedCategory != null) {
                 return ResponseEntity.ok(updatedCategory);
             } else {
@@ -61,9 +76,12 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User currentUser = userService.getCurrentUser();
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userDetails.getUser();
         try {
-            boolean isDeleted = categoryService.deleteCategory(id, currentUser);
+            boolean isDeleted = categoryService.deleteCategory(id, user);
             if (isDeleted) {
                 return ResponseEntity.ok("Category deleted successfully.");
             } else {
