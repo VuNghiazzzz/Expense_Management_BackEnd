@@ -30,9 +30,11 @@ public class CategoryController {
 
     @GetMapping("/list")
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //        User currentUser = userService.getCurrentUser();
-        List<CategoryDto> categories = categoryService.getAllCategoriesByUser(currentUser);
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userDetails.getUser();
+        List<CategoryDto> categories = categoryService.getAllCategoriesByUser(user);
         if (categories != null){
             return ResponseEntity.ok(categories);
         } else {
