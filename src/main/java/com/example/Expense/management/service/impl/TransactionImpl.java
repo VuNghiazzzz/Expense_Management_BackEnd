@@ -29,8 +29,8 @@ public class TransactionImpl implements TransactionService {
     private CategoryRepository categoryRepository;
 
     public TransactionImpl(TransactionRepository transactionRepository,
-                                  UserRepository userRepository,
-                                  CategoryRepository categoryRepository) {
+                           UserRepository userRepository,
+                           CategoryRepository categoryRepository) {
         this.transactionRepository = transactionRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
@@ -39,7 +39,7 @@ public class TransactionImpl implements TransactionService {
 
     @Override
     @Transactional
-    public TransactionDto createTransaction(Long userId, TransactionDto transactionDto) {
+    public boolean createTransaction(Long userId, TransactionDto transactionDto) {
         // Find User by userId, if not found, throw an exception
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
@@ -60,7 +60,7 @@ public class TransactionImpl implements TransactionService {
         Transaction savedTransaction = transactionRepository.save(transaction);
 
         // Convert the saved Entity to a DTO and return it
-        return TransactionMapper.mapToTransactionDto(savedTransaction);
+        return savedTransaction != null;
     }
 
     @Override
@@ -110,18 +110,20 @@ public class TransactionImpl implements TransactionService {
 
         //Save the update
         Transaction updatetransaction = transactionRepository.save(transaction);
-        return  TransactionMapper.mapToTransactionDto(updatetransaction);
+        return TransactionMapper.mapToTransactionDto(updatetransaction);
 
     }
 
     @Override
     @Transactional
-    public void deleteTransaction(Long userId, Long transactionId) {
-        //Delete Transaction
+    public boolean deleteTransaction(Long userId, Long transactionId) {
         Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction not found with ID: " + transactionId + " for user: " + userId));
 
         transactionRepository.delete(transaction);
+
+        return true;
+
     }
 
     @Override
@@ -143,15 +145,7 @@ public class TransactionImpl implements TransactionService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public BigDecimal getTotalIncome(Long userId, LocalDate startDate, LocalDate endDate) {
-        return null;
-    }
 
-    @Override
-    public BigDecimal getTotalExpense(Long userId, LocalDate startDate, LocalDate endDate) {
-        return null;
-    }
 
     @Override
     public Map<String, BigDecimal> getMonthlySummary(Long userId, int year) {
@@ -171,6 +165,12 @@ public class TransactionImpl implements TransactionService {
                 )).forEach(monthlySummary::put);
 
         return monthlySummary;
+    }
+
+    @Override
+    public BigDecimal getDailyTotal(Long userId, int year, int month, int day) {
+        LocalDate date = LocalDate.of(year, month, day);
+        return transactionRepository.findSumAmountByUserIdAndDate(userId, date);
     }
 
 
