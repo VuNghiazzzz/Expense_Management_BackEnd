@@ -2,6 +2,7 @@ package com.example.Expense.management.controller;
 
 import com.example.Expense.management.dto.CategoryDto;
 import com.example.Expense.management.entity.User;
+import com.example.Expense.management.exception.ResourceNotFoundException;
 import com.example.Expense.management.repository.CategoryRepository;
 import com.example.Expense.management.sercurity.CustomUserDetails;
 import com.example.Expense.management.service.CategoryService;
@@ -15,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -41,6 +43,19 @@ public class CategoryController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(categories);
         }
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryDto> getCategoryById(@PathVariable Long id) {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userDetails.getUser();
+        try {
+            CategoryDto categoryDto = categoryService.getCategoryById(id, user);
+            return ResponseEntity.ok(categoryDto);
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+    }
+
 
     @PostMapping("/add")
     public ResponseEntity<Boolean> createCategory(@RequestBody CategoryDto categoryDto) {

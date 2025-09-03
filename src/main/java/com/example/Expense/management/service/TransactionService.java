@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public interface TransactionService {
 
-    TransactionDto createTransaction(Long userId, TransactionDto transactionDto);
+    boolean createTransaction(Long userId, TransactionDto transactionDto);
 
     TransactionDto getTransactionById(Long userId, Long transactionId);
 
@@ -22,20 +22,17 @@ public interface TransactionService {
 
     TransactionDto updateTransaction(Long userId, Long transactionId, TransactionDto transactionDto);
 
-    void deleteTransaction(Long userId, Long transactionId);
+    boolean deleteTransaction(Long userId, Long transactionId);
 
     List<TransactionDto> getTransactionsByDate(Long userId, LocalDate date);
 
     List<TransactionDto> getTransactionsBetweenDates(Long userId, LocalDate startDate, LocalDate endDate);
 
-    BigDecimal getTotalIncome(Long userId, LocalDate startDate, LocalDate endDate);
-
-    BigDecimal getTotalExpense(Long userId, LocalDate startDate, LocalDate endDate);
-
     Map<String, BigDecimal> getMonthlySummary(Long userId, int year);
 
-//    Map<String, BigDecimal> getExpenseSummaryByCategory(Long userId, LocalDate startDate, LocalDate endDate);
+    BigDecimal getDailyTotal(Long userId, int year, int month, int day);
 
+//    Map<String, BigDecimal> getExpenseSummaryByCategory(Long userId, LocalDate startDate, LocalDate endDate);
 
 }
 
