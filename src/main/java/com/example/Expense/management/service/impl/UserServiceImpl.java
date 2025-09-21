@@ -65,9 +65,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> registerUser(UserDto userDto){
         // Check user already exists
-        if (userRepository.findByUsername(userDto.getEmail()) != null || userRepository.findByEmail(userDto.getEmail()) != null) {
+        if (userRepository.findByUsername(userDto.getUsername()).isPresent() || userRepository.findByEmail(userDto.getEmail()).isPresent()) {
             throw new RuntimeException("A username or email that already exists.");
         }
+
         User user = UserMapper.mapUser(userDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         User savedUser = userRepository.save(user);
@@ -83,10 +84,6 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-    @Override
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
 
     @Override
     public User getCurrentUser() {
@@ -136,6 +133,11 @@ public class UserServiceImpl implements UserService {
         String token = jwtUtil.generateToken(optionalUser.get().getEmail());
 
         return new LoginMessage("Login successful", true, token);
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return null;
     }
 
     @Override
