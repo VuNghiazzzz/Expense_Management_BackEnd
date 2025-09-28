@@ -1,5 +1,6 @@
 package com.example.Expense.management.service;
 
+import com.example.Expense.management.dto.CategoryDto;
 import com.example.Expense.management.dto.UserDto;
 import com.example.Expense.management.dto.LoginDto;
 import com.example.Expense.management.entity.User;
@@ -17,4 +18,5 @@ public interface UserService {
     User getCurrentUser();
     LoginMessage LoginUser(LoginDto loginDto);
     Map<String, Object> registerUser(UserDto userDto);
+    User updateProfile(Long userId, String newUsername);
 }
