@@ -3,8 +3,10 @@ package com.example.Expense.management.service.impl;
 import com.example.Expense.management.JWT.JwtUtil;
 import com.example.Expense.management.dto.UserDto;
 import com.example.Expense.management.dto.LoginDto;
+import com.example.Expense.management.entity.Category;
 import com.example.Expense.management.entity.User;
 import com.example.Expense.management.loginreponse.LoginMessage;
+import com.example.Expense.management.mapper.CategoryMapper;
 import com.example.Expense.management.sercurity.CustomUserDetails;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
@@ -82,6 +84,21 @@ public class UserServiceImpl implements UserService {
         response.put("token", token);
 
         return response;
+    }
+
+    @Override
+    public User updateProfile(Long userId, String newUsername) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            if (newUsername == null || newUsername.trim().isEmpty()) {
+                throw new IllegalArgumentException("Username cannot be empty");
+            }
+            user.setUsername(newUsername.trim());
+            return userRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found");
+        }
     }
 
 

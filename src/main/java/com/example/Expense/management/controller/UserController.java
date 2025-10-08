@@ -57,4 +57,19 @@ public class UserController {
             return ResponseEntity.status(401).body("Unauthorized");
         }
     }
+
+    @PutMapping("/update/profile")
+    public ResponseEntity<?> updateProfile(@RequestBody UserDto userDto) {
+        try {
+            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            User currentUser = userDetails.getUser();
+            User updatedUser = userService.updateProfile(currentUser.getId(), userDto.getUsername());
+            UserDto updatedUserDto = new UserDto(updatedUser.getId(), updatedUser.getUsername(), updatedUser.getEmail());
+            return ResponseEntity.ok(updatedUserDto);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+    }
 }
