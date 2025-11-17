@@ -1,5 +1,6 @@
 package com.example.Expense.management.controller;
 
+import com.example.Expense.management.dto.CategoryUpdateRequest;
 import com.example.Expense.management.dto.TransactionDto;
 import com.example.Expense.management.entity.User;
 import com.example.Expense.management.sercurity.CustomUserDetails;
@@ -100,19 +101,20 @@ public class TransactionController {
         return ResponseEntity.ok(transactions);
     }
 
-
-    @GetMapping("/list/range")
-    public ResponseEntity<List<TransactionDto>> getTransactionsByDateRange(
-            @RequestParam int startYear, @RequestParam int startMonth, @RequestParam int startDay,
-            @RequestParam int endYear, @RequestParam int endMonth, @RequestParam int endDay) {
+    //Update the category of a transaction
+    @PatchMapping("/{transactionId}/category")
+    public ResponseEntity<TransactionDto> updateTransactionCategory(
+            @PathVariable Long transactionId,
+            @RequestBody CategoryUpdateRequest request
+    ) {
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userDetails.getUser();
 
-        LocalDate startDate = LocalDate.of(startYear, startMonth, startDay);
-        LocalDate endDate = LocalDate.of(endYear, endMonth, endDay);
+        TransactionDto updatedTransaction = transactionService.updateTransactionCategory(user.getId(), transactionId, request.getCategoryId());
 
-        List<TransactionDto> transactions = transactionService.getTransactionsByDateRange(user.getId(), startDate, endDate);
-        return ResponseEntity.ok(transactions);
+        return ResponseEntity.ok(updatedTransaction);
     }
+
+
 
 }
