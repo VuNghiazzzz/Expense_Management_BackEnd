@@ -173,6 +173,32 @@ public class TransactionImpl implements TransactionService {
         return transactionRepository.findSumAmountByUserIdAndDate(userId, date);
     }
 
+    @Override
+    public TransactionDto updateTransactionCategory(Long userId, Long transactionId, Long categoryId) {
+        Transaction transaction = transactionRepository.findByIdAndUserId(transactionId, userId)
+                .orElseThrow(() -> new RuntimeException("Transaction not found or not owned by user"));
+
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new RuntimeException("Category not found"));
+
+        if (!category.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Category does not belong to the user");
+        }
+
+        transaction.setCategory(category);
+
+        Transaction saved = transactionRepository.save(transaction);
+
+        TransactionDto transactionDto = new TransactionDto();
+        transactionDto.setId(saved.getId());
+        transactionDto.setAmount(saved.getAmount());
+        transactionDto.setNote(saved.getNote());
+        transactionDto.setDate(saved.getDate());
+        transactionDto.setCategoryId(saved.getCategory() != null ? saved.getCategory().getId() : null);
+
+        return transactionDto;
+    }
+
 
 //    @Override
 //    public Map<String, BigDecimal> getExpenseSummaryByCategory(Long userId, LocalDate startDate, LocalDate endDate) {

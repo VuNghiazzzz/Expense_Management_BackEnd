@@ -32,6 +32,8 @@ public interface TransactionService {
 
     BigDecimal getDailyTotal(Long userId, int year, int month, int day);
 
+    TransactionDto updateTransactionCategory(Long userId, Long transactionId, Long categoryId);
+
 //    Map<String, BigDecimal> getExpenseSummaryByCategory(Long userId, LocalDate startDate, LocalDate endDate);
 
 }

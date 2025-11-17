@@ -100,4 +100,19 @@ public class TransactionController {
         return ResponseEntity.ok(transactions);
     }
 
+
+    @GetMapping("/list/range")
+    public ResponseEntity<List<TransactionDto>> getTransactionsByDateRange(
+            @RequestParam int startYear, @RequestParam int startMonth, @RequestParam int startDay,
+            @RequestParam int endYear, @RequestParam int endMonth, @RequestParam int endDay) {
+        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userDetails.getUser();
+
+        LocalDate startDate = LocalDate.of(startYear, startMonth, startDay);
+        LocalDate endDate = LocalDate.of(endYear, endMonth, endDay);
+
+        List<TransactionDto> transactions = transactionService.getTransactionsByDateRange(user.getId(), startDate, endDate);
+        return ResponseEntity.ok(transactions);
+    }
+
 }
