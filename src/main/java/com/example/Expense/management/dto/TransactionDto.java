@@ -21,6 +21,11 @@ public class TransactionDto {
 
     private Long userId;
 
+    private String categoryName;
+
+    private String type;
+
+
     public TransactionDto() {
     }
 
@@ -80,5 +85,11 @@ public class TransactionDto {
     public void setUserId(Long userId) {
         this.userId = userId;
     }
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
 
+    public void setType(String type) {
+        this.type = type;
+    }
 }

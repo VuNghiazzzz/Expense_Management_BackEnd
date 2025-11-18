@@ -1,7 +1,9 @@
 package com.example.Expense.management.controller;
 
+import com.example.Expense.management.dto.CategorySummaryDto;
 import com.example.Expense.management.dto.CategoryUpdateRequest;
 import com.example.Expense.management.dto.TransactionDto;
+import com.example.Expense.management.dto.TransactionSummaryDto;
 import com.example.Expense.management.entity.User;
 import com.example.Expense.management.sercurity.CustomUserDetails;
 import com.example.Expense.management.service.TransactionService;
@@ -12,10 +14,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.security.Principal;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
+
 import java.time.LocalDate;
 import java.util.List;
+import java.math.BigDecimal;
+
+import java.security.Principal;
 import java.util.Map;
 
 @RestController
@@ -115,6 +122,52 @@ public class TransactionController {
         return ResponseEntity.ok(updatedTransaction);
     }
 
+    // get filter, pagination (yyyy-MM-dd)
+    @GetMapping
+    public Page<TransactionDto> getTransactions(
+            @RequestParam Long userId,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        LocalDate start = startDate != null ? LocalDate.parse(startDate) : null;
+        LocalDate end = endDate != null ? LocalDate.parse(endDate) : null;
+        return transactionService.filterTransactions(userId, type, categoryId, start, end, page, size);
+    }
+
+    //Get total income expenses by month
+    @GetMapping("/summary/monthly")
+    public TransactionSummaryDto getMonthlySummary(
+            @RequestParam Long userId,
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return transactionService.getMonthlySummary(userId, year, month);
+    }
+
+
+    //Get total income expenses by year
+    @GetMapping("/summary/yearly")
+    public TransactionSummaryDto getYearlySummary(
+            @RequestParam Long userId,
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return transactionService.getYearlySummary(userId, year, month);
+    }
+
+    // Get total income expenses by category for 1 month
+    @GetMapping("/summary/category")
+    public List<CategorySummaryDto> getSummaryByCategory(
+            @RequestParam Long userId,
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return transactionService.getSummaryByCategory(userId, year, month);
+    }
 
 
 }

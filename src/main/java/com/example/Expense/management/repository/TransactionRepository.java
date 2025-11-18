@@ -1,5 +1,6 @@
 package com.example.Expense.management.repository;
 
+import com.example.Expense.management.dto.CategorySummaryDto;
 import com.example.Expense.management.dto.MonthlyStatDto;
 import com.example.Expense.management.dto.TransactionDto;
 import com.example.Expense.management.entity.Category;
@@ -69,5 +70,18 @@ public interface TransactionRepository extends JpaRepository <Transaction, Long>
             @Param("endDate") LocalDate endDate,
             Pageable pageable
     );
+
+
+    // summary category
+    @Query("SELECT new com.example.Expense.management.dto.CategorySummaryDto(" +
+            "t.category.name, SUM(t.amount)) " +
+            "FROM Transaction t " +
+            "WHERE t.user.id = :userId " +
+            "AND YEAR(t.date) = :year " +
+            "AND MONTH(t.date) = :month " +
+            "GROUP BY t.category.name")
+    List<CategorySummaryDto> sumByCategory(@Param("userId") Long userId,
+                                           @Param("year") int year,
+                                           @Param("month") int month);
 
 }

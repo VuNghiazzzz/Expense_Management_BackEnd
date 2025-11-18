@@ -1,23 +1,35 @@
 package com.example.Expense.management.service.impl;
 
+import com.example.Expense.management.dto.CategorySummaryDto;
+import com.example.Expense.management.dto.MonthlyStatDto;
 import com.example.Expense.management.dto.TransactionDto;
+import com.example.Expense.management.dto.TransactionSummaryDto;
 import com.example.Expense.management.entity.Category;
 import com.example.Expense.management.entity.Transaction;
 import com.example.Expense.management.entity.User;
 import com.example.Expense.management.exception.ResourceNotFoundException;
+import com.example.Expense.management.mapper.TransactionDtoMapper;
 import com.example.Expense.management.mapper.TransactionMapper;
 import com.example.Expense.management.repository.CategoryRepository;
 import com.example.Expense.management.repository.TransactionRepository;
 import com.example.Expense.management.repository.UserRepository;
 import com.example.Expense.management.service.TransactionService;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 import java.time.LocalDate;
+import java.util.stream.Collectors;
+
+import java.math.BigDecimal;
 import java.time.Month;
 import java.util.*;
-import java.util.stream.Collectors;
+
 
 @Service
 public class TransactionImpl implements TransactionService {
@@ -199,18 +211,53 @@ public class TransactionImpl implements TransactionService {
         return transactionDto;
     }
 
+    @Override
+    public TransactionSummaryDto getMonthlySummary(Long userId, int year, int month) {
 
-//    @Override
-//    public Map<String, BigDecimal> getExpenseSummaryByCategory(Long userId, LocalDate startDate, LocalDate endDate) {
-//        List<Transaction> transactions = transactionRepository.findByUserIdAndDateBetween(userId, startDate, endDate);
-//
-//        List<Transaction> expenseTransactions = transactions.stream()
-//                .filter(t -> t.getCategory().getType() == Category.CategoryType.EXPENSE)
-//                .collect(Collectors.toList());
-//        return expenseTransactions.stream()
-//                .collect(Collectors.groupingBy(
-//                        transaction -> transaction.getCategory().getName(),
-//                        Collectors.reducing(BigDecimal.ZERO, Transaction::getAmount, BigDecimal::add)
-//                ));
-//    }
+        BigDecimal income = transactionRepository.sumMonthlyIncome(userId, year, month);
+        BigDecimal expense = transactionRepository.sumMonthlyExpense(userId, year, month);
+
+        return new TransactionSummaryDto(income, expense);
+    }
+
+    @Override
+    public TransactionSummaryDto getYearlySummary(Long userId, int year, int month) {
+
+        BigDecimal income = transactionRepository.sumMonthlyIncome(userId, year, month);
+        BigDecimal expense = transactionRepository.sumMonthlyExpense(userId, year, month);
+
+        return new TransactionSummaryDto(income, expense);
+
+    }
+
+
+    @Override
+    public List<CategorySummaryDto> getSummaryByCategory(Long userId, int year, int month) {
+        return transactionRepository.sumByCategory(userId, year, month);
+    }
+
+    @Override
+    public List<MonthlyStatDto> getMonthlyStats(Long userId, int year) {
+        return transactionRepository.getMonthlyStats(userId, year);
+    }
+
+    @Override
+    public Page<TransactionDto> filterTransactions(Long userId, String type, Long categoryId, LocalDate startDate, LocalDate endDate, int page, int size) {
+
+            Pageable pageable = PageRequest.of(page, size);
+
+            Page<Transaction> entityPage = transactionRepository.filterTransactions(
+                    userId,
+                    type,
+                    categoryId,
+                    startDate,
+                    endDate,
+                    pageable
+            );
+
+        return entityPage.map(TransactionDtoMapper::transactionDto);
+    }
+
+
+
 }

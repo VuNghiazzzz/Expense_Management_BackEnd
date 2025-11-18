@@ -42,7 +42,7 @@ public interface TransactionService {
     // Summary, Statistics
     TransactionSummaryDto getMonthlySummary(Long userId, int year, int month);
 
-    TransactionSummaryDto getYearlySummary(Long userId, int year);
+    TransactionSummaryDto getYearlySummary(Long userId, int year, int month);
 
     List<CategorySummaryDto> getSummaryByCategory(Long userId, int year, int month);
 
