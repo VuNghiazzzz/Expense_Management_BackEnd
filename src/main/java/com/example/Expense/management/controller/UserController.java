@@ -1,5 +1,6 @@
 package com.example.Expense.management.controller;
 
+import com.example.Expense.management.JWT.UserUtil;
 import com.example.Expense.management.dto.UserDto;
 import com.example.Expense.management.dto.LoginDto;
 import com.example.Expense.management.entity.User;
@@ -49,9 +50,12 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<?> getCurrentUser() {
         try {
-            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            User user = userDetails.getUser();
-            UserDto userDto = new UserDto(user.getId(), user.getUsername(), user.getEmail());
+//          CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//          User user = userDetails.getUser();
+//          UserDto userDto = new UserDto(user.getId(), user.getUsername(), user.getEmail());
+
+            User currentUser = UserUtil.getCurrentUser();
+            UserDto userDto = new UserDto(currentUser.getId(), currentUser.getUsername(), currentUser.getEmail());
             return ResponseEntity.ok(userDto);
         } catch (Exception e) {
             return ResponseEntity.status(401).body("Unauthorized");
@@ -61,8 +65,12 @@ public class UserController {
     @PutMapping("/update/profile")
     public ResponseEntity<?> updateProfile(@RequestBody UserDto userDto) {
         try {
-            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            User currentUser = userDetails.getUser();
+//          CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//          User currentUser = userDetails.getUser();
+//          User updatedUser = userService.updateProfile(currentUser.getId(), userDto.getUsername());
+//          UserDto updatedUserDto = new UserDto(updatedUser.getId(), updatedUser.getUsername(), updatedUser.getEmail());
+
+            User currentUser = UserUtil.getCurrentUser();
             User updatedUser = userService.updateProfile(currentUser.getId(), userDto.getUsername());
             UserDto updatedUserDto = new UserDto(updatedUser.getId(), updatedUser.getUsername(), updatedUser.getEmail());
             return ResponseEntity.ok(updatedUserDto);
