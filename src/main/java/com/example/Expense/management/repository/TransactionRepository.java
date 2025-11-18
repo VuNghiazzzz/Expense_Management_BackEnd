@@ -1,5 +1,6 @@
 package com.example.Expense.management.repository;
 
+import com.example.Expense.management.dto.MonthlyStatDto;
 import com.example.Expense.management.dto.TransactionDto;
 import com.example.Expense.management.entity.Category;
 import com.example.Expense.management.entity.Transaction;
@@ -40,6 +41,19 @@ public interface TransactionRepository extends JpaRepository <Transaction, Long>
             "WHERE t.user.id = :userId AND t.category.type = 'EXPENSE' " +
             "AND YEAR(t.date) = :year AND MONTH(t.date) = :month")
     BigDecimal sumMonthlyExpense(@Param("userId") Long userId, @Param("year") int year, @Param("month") int month);
+
+
+    // monthly stat for 12 month
+    @Query("SELECT new com.example.Expense.management.dto.summary.MonthlyStatDto( " +
+            "MONTH(t.date), " +
+            "SUM(CASE WHEN c.type = 'INCOME' THEN t.amount ELSE 0 END), " +
+            "SUM(CASE WHEN c.type = 'EXPENSE' THEN t.amount ELSE 0 END)) " +
+            "FROM Transaction t JOIN t.category c " +
+            "WHERE t.user.id = :userId AND YEAR(t.date) = :year " +
+            "GROUP BY MONTH(t.date) " +
+            "ORDER BY MONTH(t.date)")
+    List<MonthlyStatDto> getMonthlyStats(@Param("userId") Long userId, @Param("year") int year);
+
 
 
 }
