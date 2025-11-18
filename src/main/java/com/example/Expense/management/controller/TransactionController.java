@@ -159,7 +159,7 @@ public class TransactionController {
         return transactionService.getYearlySummary(userId, year, month);
     }
 
-    // Get total income expenses by category for 1 month
+    // Get total income expenses by category
     @GetMapping("/summary/category")
     public List<CategorySummaryDto> getSummaryByCategory(
             @RequestParam Long userId,
