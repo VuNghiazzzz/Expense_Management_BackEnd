@@ -1,5 +1,6 @@
 package com.example.Expense.management.controller;
 
+import com.example.Expense.management.JWT.UserUtil;
 import com.example.Expense.management.dto.CategorySummaryDto;
 import com.example.Expense.management.dto.CategoryUpdateRequest;
 import com.example.Expense.management.dto.TransactionDto;
@@ -133,9 +134,18 @@ public class TransactionController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        LocalDate start = startDate != null ? LocalDate.parse(startDate) : null;
-        LocalDate end = endDate != null ? LocalDate.parse(endDate) : null;
-        return transactionService.filterTransactions(userId, type, categoryId, start, end, page, size);
+//        LocalDate start = startDate != null ? LocalDate.parse(startDate) : null;
+//        LocalDate end = endDate != null ? LocalDate.parse(endDate) : null;
+
+        User user = UserUtil.getCurrentUser();
+        return transactionService.filterTransactions(
+                user.getId(),
+                type,
+                categoryId,
+                startDate != null ? LocalDate.parse(startDate) : null,
+                endDate != null ? LocalDate.parse(endDate) : null,
+                page,
+                size);
     }
 
     //Get total income expenses by month
