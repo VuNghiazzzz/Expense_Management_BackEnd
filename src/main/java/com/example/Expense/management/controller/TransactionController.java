@@ -41,8 +41,9 @@ public class TransactionController {
 
     @PostMapping("/add")
     public ResponseEntity<Boolean> createTransaction(@RequestBody TransactionDto dto ) {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+        // CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // User user = userDetails.getUser();
+        User user = UserUtil.getCurrentUser();
         boolean isSuccess = transactionService.createTransaction(user.getId(), dto);
         if (isSuccess) {
             return ResponseEntity.ok(true);
@@ -53,29 +54,25 @@ public class TransactionController {
 
     @GetMapping("/list")
     public ResponseEntity<List<TransactionDto>> getAllTransactions() {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+        User user = UserUtil.getCurrentUser();
         return ResponseEntity.ok(transactionService.getAllTransactionsByUser(user.getId()));
     }
 
     @GetMapping("/list/{id}")
     public ResponseEntity<TransactionDto> getTransactionById(@PathVariable Long id) {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+        User user = UserUtil.getCurrentUser();
         return ResponseEntity.ok(transactionService.getTransactionById(user.getId(), id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<TransactionDto> updateTransaction(@PathVariable Long id, @RequestBody TransactionDto dto) {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+        User user = UserUtil.getCurrentUser();
         return ResponseEntity.ok(transactionService.updateTransaction(user.getId(), id, dto));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteTransaction(@PathVariable Long id) {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+        User user = UserUtil.getCurrentUser();
         boolean isSuccess = transactionService.deleteTransaction(user.getId(), id);
         if (isSuccess) {
             return ResponseEntity.ok(true);
@@ -88,8 +85,7 @@ public class TransactionController {
     @GetMapping("/summary/daily")
     public ResponseEntity<BigDecimal> getDailySummary(@RequestParam int year, @RequestParam int month, @RequestParam int day)
     {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+        User user = UserUtil.getCurrentUser();
         BigDecimal total = transactionService.getDailyTotal(user.getId(), year, month, day);
         return ResponseEntity.ok(total);
     }
@@ -101,9 +97,7 @@ public class TransactionController {
             @RequestParam int month,
             @RequestParam int day
     ) {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
-
+        User user = UserUtil.getCurrentUser();
         LocalDate date = LocalDate.of(year, month, day);
         List<TransactionDto> transactions = transactionService.getTransactionsByDate(user.getId(), date);
         return ResponseEntity.ok(transactions);
@@ -115,11 +109,8 @@ public class TransactionController {
             @PathVariable Long transactionId,
             @RequestBody CategoryUpdateRequest request
     ) {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
-
+        User user = UserUtil.getCurrentUser();
         TransactionDto updatedTransaction = transactionService.updateTransactionCategory(user.getId(), transactionId, request.getCategoryId());
-
         return ResponseEntity.ok(updatedTransaction);
     }
 
@@ -181,3 +172,4 @@ public class TransactionController {
 
 
 }
+
