@@ -60,9 +60,6 @@ public class CategoryController {
     @PostMapping("/add")
     public ResponseEntity<Boolean> createCategory(@RequestBody CategoryDto categoryDto) {
         User user = UserUtil.getCurrentUser();
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
-
         System.out.println("Current User ID: " + (user != null ? user.getId() : "null"));
         boolean isSuccess = categoryService.createCategory(categoryDto, user);
         if(isSuccess){
@@ -103,4 +100,5 @@ public class CategoryController {
     }
 
 }
+
 
