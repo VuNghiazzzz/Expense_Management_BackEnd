@@ -34,8 +34,9 @@ public class CategoryController {
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
 //        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //        User currentUser = userService.getCurrentUser();
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+        // CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // User user = userDetails.getUser();
+        User user = UserUtil.getCurrentUser();
         List<CategoryDto> categories = categoryService.getAllCategoriesByUser(user);
         if (categories != null){
             return ResponseEntity.ok(categories);
@@ -46,8 +47,7 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDto> getCategoryById(@PathVariable Long id) {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+     User user = UserUtil.getCurrentUser();
         try {
             CategoryDto categoryDto = categoryService.getCategoryById(id, user);
             return ResponseEntity.ok(categoryDto);
@@ -59,8 +59,7 @@ public class CategoryController {
 
     @PostMapping("/add")
     public ResponseEntity<Boolean> createCategory(@RequestBody CategoryDto categoryDto) {
-//      User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//      User currentUser = userService.getCurrentUser();
+        User user = UserUtil.getCurrentUser();
         CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         User user = userDetails.getUser();
 
@@ -75,10 +74,7 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
-//        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        User currentUser = userService.getCurrentUser();
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+        User user = UserUtil.getCurrentUser();
         try {
             CategoryDto updatedCategory = categoryService.updateCategory(id, categoryDto, user);
             if (updatedCategory != null) {
@@ -93,10 +89,7 @@ public class CategoryController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
-//        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        User currentUser = userService.getCurrentUser();
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+        User user = UserUtil.getCurrentUser();
         try {
             boolean isDeleted = categoryService.deleteCategory(id, user);
             if (isDeleted) {
@@ -110,3 +103,4 @@ public class CategoryController {
     }
 
 }
+
