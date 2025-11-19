@@ -1,5 +1,6 @@
 package com.example.Expense.management.controller;
 
+import com.example.Expense.management.JWT.UserUtil;
 import com.example.Expense.management.dto.CategoryDto;
 import com.example.Expense.management.entity.User;
 import com.example.Expense.management.exception.ResourceNotFoundException;
@@ -34,8 +35,9 @@ public class CategoryController {
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
 //        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //        User currentUser = userService.getCurrentUser();
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+//        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User user = userDetails.getUser();
+        User user = UserUtil.getCurrentUser();
         List<CategoryDto> categories = categoryService.getAllCategoriesByUser(user);
         if (categories != null){
             return ResponseEntity.ok(categories);
@@ -46,8 +48,9 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDto> getCategoryById(@PathVariable Long id) {
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+//        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User user = userDetails.getUser();
+        User user = UserUtil.getCurrentUser();
         try {
             CategoryDto categoryDto = categoryService.getCategoryById(id, user);
             return ResponseEntity.ok(categoryDto);
@@ -61,9 +64,9 @@ public class CategoryController {
     public ResponseEntity<Boolean> createCategory(@RequestBody CategoryDto categoryDto) {
 //      User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //      User currentUser = userService.getCurrentUser();
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
-
+//        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User user = userDetails.getUser();
+        User user = UserUtil.getCurrentUser();
         System.out.println("Current User ID: " + (user != null ? user.getId() : "null"));
         boolean isSuccess = categoryService.createCategory(categoryDto, user);
         if(isSuccess){
@@ -77,8 +80,9 @@ public class CategoryController {
     public ResponseEntity<?> updateCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
 //        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //        User currentUser = userService.getCurrentUser();
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+//        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User user = userDetails.getUser();
+        User user = UserUtil.getCurrentUser();
         try {
             CategoryDto updatedCategory = categoryService.updateCategory(id, categoryDto, user);
             if (updatedCategory != null) {
@@ -95,8 +99,9 @@ public class CategoryController {
     public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
 //        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //        User currentUser = userService.getCurrentUser();
-        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userDetails.getUser();
+//        CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        User user = userDetails.getUser();
+        User user = UserUtil.getCurrentUser();
         try {
             boolean isDeleted = categoryService.deleteCategory(id, user);
             if (isDeleted) {
