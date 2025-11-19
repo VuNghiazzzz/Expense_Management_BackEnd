@@ -43,6 +43,9 @@ public class TransactionController {
     public ResponseEntity<Boolean> createTransaction(@RequestBody TransactionDto dto ) {
 //      CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //      User user = userDetails.getUser();
+
+        // CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // User user = userDetails.getUser();
         User user = UserUtil.getCurrentUser();
         boolean isSuccess = transactionService.createTransaction(user.getId(), dto);
         if (isSuccess) {
@@ -110,9 +113,7 @@ public class TransactionController {
             @RequestBody CategoryUpdateRequest request
     ) {
         User user = UserUtil.getCurrentUser();
-
         TransactionDto updatedTransaction = transactionService.updateTransactionCategory(user.getId(), transactionId, request.getCategoryId());
-
         return ResponseEntity.ok(updatedTransaction);
     }
 
@@ -177,3 +178,4 @@ public class TransactionController {
 
 
 }
+

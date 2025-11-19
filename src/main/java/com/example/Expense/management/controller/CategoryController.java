@@ -33,10 +33,8 @@ public class CategoryController {
 
     @GetMapping("/list")
     public ResponseEntity<List<CategoryDto>> getAllCategories() {
-//      User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//      User currentUser = userService.getCurrentUser();
-//      CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//      User user = userDetails.getUser();
+        // CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // User user = userDetails.getUser();
         User user = UserUtil.getCurrentUser();
         List<CategoryDto> categories = categoryService.getAllCategoriesByUser(user);
         if (categories != null){
@@ -48,7 +46,8 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDto> getCategoryById(@PathVariable Long id) {
-        User user = UserUtil.getCurrentUser();
+        User user = UserUtil.getCurrentUser();;
+
         try {
             CategoryDto categoryDto = categoryService.getCategoryById(id, user);
             return ResponseEntity.ok(categoryDto);
@@ -101,3 +100,5 @@ public class CategoryController {
     }
 
 }
+
+
