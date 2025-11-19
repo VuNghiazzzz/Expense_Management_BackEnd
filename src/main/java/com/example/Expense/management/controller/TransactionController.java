@@ -141,7 +141,7 @@ public class TransactionController {
                 size);
     }
 
-    //Get total income expenses by month
+    //Get total income expenses
     @GetMapping("/summary/monthly")
     public TransactionSummaryDto getMonthlySummary(
             @RequestParam Long userId,
@@ -153,7 +153,7 @@ public class TransactionController {
     }
 
 
-    //Get total income expenses by year
+    //Get total income expenses
     @GetMapping("/summary/yearly")
     public TransactionSummaryDto getYearlySummary(
             @RequestParam Long userId,
@@ -164,7 +164,7 @@ public class TransactionController {
         return transactionService.getYearlySummary(userId, year, month);
     }
 
-    // Get total income expenses by category
+    // Get total income expenses
     @GetMapping("/summary/category")
     public List<CategorySummaryDto> getSummaryByCategory(
             @RequestParam Long userId,
